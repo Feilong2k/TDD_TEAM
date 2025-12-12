@@ -1,0 +1,101 @@
+# Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Build outputs
+dist/
+build/
+.out/
+.next/
+
+# Runtime data
+*.pid
+*.seed
+*.pid.lock
+
+# Logs
+logs
+*.log
+
+# Coverage directory used by tools like istanbul
+coverage/
+*.lcov
+
+# nyc test coverage
+.nyc_output
+
+# Editor directories and files
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.idea/
+*.swp
+*.swo
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Temporary files
+tmp/
+temp/
+
+# Frontend build artifacts
+frontend/dist/
+frontend/.vite/
+frontend/public/vite.svg  # keep the original, but built ones?
+
+# Backend build artifacts
+backend/node_modules/
+
+# Data files (optional: you might want to track them, but we'll ignore for now)
+# data/*.json
+# !data/projects.json
+# !data/tasks.json
+# !data/state_rules.json
+# !data/conversations/
+
+# Ignore the data/logs and data/log directories
+data/log/
+data/logs/
+
+# Cline wrapper and agents might have their own dependencies
+agents/node_modules/
+scripts/node_modules/
+
+# Optional: ignore the package-lock.json if you want to use yarn
+# package-lock.json
+
+# If using yarn, ignore yarn.lock
+# yarn.lock
+
+# If using pnpm, ignore pnpm-lock.yaml
+# pnpm-lock.yaml
+
+# If using bun, ignore bun.lockb
+# bun.lockb
+
+# Misc
+.cache
+.parcel-cache
+.sass-cache
+
+# Optional: ignore the .env file for frontend
+frontend/.env
+frontend/.env.*
