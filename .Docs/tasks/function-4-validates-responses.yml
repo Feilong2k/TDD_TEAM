@@ -1,0 +1,120 @@
+function:
+  number: 4
+  name: "Validates Responses"
+  purpose: "Verifies that Orion's response is valid JSON and matches the expected structure."
+
+resources:
+  json_schema_definitions:
+    response_types:
+      - "clarification"
+      - "decomposition"
+      - "instruction"
+      - "status_update"
+      - "conversation"
+    content_structures: "Defined in system prompt for each response type"
+  validation_logic:
+    - "validateJsonResponse() method"
+    - "validateContentByType() method"
+  regex_for_json_extraction: "/\\{[\\s\\S]*\\}/"
+
+example_valid_responses:
+  clarification: |
+    {
+      "response_type": "clarification",
+      "content": {
+        "questions": ["Question 1", "Question 2"]
+      },
+      "metadata": { ... }
+    }
+  decomposition: |
+    {
+      "response_type": "decomposition",
+      "content": {
+        "subtasks": [
+          {
+            "id": "T-001-1",
+            "title": "Write failing test",
+            "description": "...",
+            "assignee": "Tara",
+            "status": "pending"
+          }
+        ]
+      },
+      "metadata": { ... }
+    }
+
+common_response_structure:
+  json: |
+    {
+      "response_type": "clarification|decomposition|instruction|status_update|conversation",
+      "content": { /* type-specific content */ },
+      "metadata": {
+        "task_id": "string|null",
+        "project_id": "string",
+        "requires_action": "boolean",
+        "next_step": "string|null",
+        "timestamp": "ISO 8601 string"
+      }
+    }
+
+type_specific_content_structures:
+  clarification:
+    content:
+      questions: "array of strings"
+  decomposition:
+    content:
+      subtasks: "array of subtask objects"
+  instruction:
+    content:
+      instructions: "string"
+      assignee: "Tara|Devon"
+      expected_outcome: "string"
+  status_update:
+    content:
+      updates: "array of update objects"
+  conversation:
+    content:
+      message: "string"
+
+test_cases:
+  - "Should accept valid JSON with correct structure."
+  - "Should reject JSON missing required fields."
+  - "Should extract JSON from text containing warnings or other output."
+  - "Should validate content based on response_type (e.g., subtasks array for decomposition)."
+
+implementation_status:
+  tdd_phase: "Not started"
+  status: "Pending implementation"
+  last_updated: "2025-12-12"
+
+implementation_requirements:
+  - "Parse JSON from string (handle parsing errors)"
+  - "Validate required fields exist (response_type, content, metadata)"
+  - "Validate response_type is one of allowed types"
+  - "Validate content structure based on response_type"
+  - "Extract JSON from surrounding text using regex if needed"
+  - "Provide detailed error messages for validation failures"
+
+notes:
+  - "NOTE: are we using Regex to extract JSON portion of the response? so type of warning should be excluded"
+
+key_considerations:
+  - "JSON extraction: May need to extract JSON from Cline output that includes warnings or other text"
+  - "Schema validation: Different content structures for each response_type"
+  - "Error messages: Provide helpful error messages for validation failures"
+  - "Fallback handling: What to do when validation fails (trigger retry logic)"
+
+dependencies:
+  - "Function 3: Calls Cline via Proxy (for raw response)"
+  - "Function 5: Handles Retries (for validation failure handling)"
+
+validation_steps:
+  1. "Extract JSON from response text (regex if needed)"
+  2. "Parse JSON (catch syntax errors)"
+  3. "Validate required top-level fields"
+  4. "Validate response_type is valid"
+  5. "Validate content structure based on response_type"
+  6. "Return validated object or error"
+
+created: "2025-12-12"
+updated: "2025-12-12"

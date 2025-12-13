@@ -1,0 +1,80 @@
+function:
+  number: 1
+  name: "Receives Messages"
+  purpose: "Accepts user input along with project/task context and mode (Plan/Act) from the chat interface."
+
+resources:
+  backend_api_endpoint: "backend/server.js - POST /api/chat"
+  frontend_component: "frontend/src/components/ChatPanel.vue - sendMessage() method"
+  validation_logic: "Within wrapper or backend route"
+
+example_input:
+  json: |
+    {
+      "message": "I need to add user authentication.",
+      "projectId": "P-001",
+      "taskId": "P-001-T-001",
+      "mode": "plan"
+    }
+
+test_cases:
+  - "Should accept valid message with all optional fields."
+  - "Should reject requests missing the `message` field."
+  - "Should default `projectId` to 'P-001' if not provided."
+  - "Should validate `mode` is either 'plan' or 'act'."
+
+implementation_status:
+  tdd_phase: "Green (completed)"
+  test_results:
+    total: 11
+    passing: 11
+    failing: 0
+  last_updated: "2025-12-12"
+  test_file: "backend/__tests__/unit/orion-wrapper-v2.test.js"
+  implementation_file: "agents/orion-wrapper-v2.js"
+
+implementation_details:
+  input_validation:
+    - "Validates message is not empty"
+    - "Validates mode is 'plan' or 'act'"
+    - "Validates message is a string"
+  file_path_generation:
+    - "Added getConversationFilePath() method"
+    - "Generates correct paths for project and task conversations"
+    - "Uses forward slashes for cross-platform compatibility"
+  message_processing:
+    - "Saves user messages to conversation files immediately"
+    - "Adds status field to messages (initial: 'pending')"
+    - "Returns proper response object structure"
+  response_handling:
+    - "Returns mock response (will be replaced with actual Orion responses later)"
+    - "Includes metadata.mode field"
+    - "Follows expected JSON structure from documentation"
+
+notes:
+  - "Only project ID needed for context, taskId optional"
+  - "Messages saved to conversation files with 'pending' status"
+  - "Implementation includes input validation and mock responses"
+  - "Backend (backend/server.js) already handles optional taskId via getIds() function"
+
+response_to_notes:
+  message_recording: "Messages should be recorded in conversation files (data/conversations/project_{id}.json or task_{id}.json), not a separate message.json"
+  message_status: "Messages include status field (e.g., 'pending', 'completed', 'failed')"
+  file_creation: "Conversation files are created automatically when the first message for a project/task is sent"
+  implementation_plan: "For Function 1, messages are immediately saved to conversation files with timestamp and status field set to 'pending' initially"
+
+key_features:
+  - "Robust validation: Ensures all inputs are valid before processing"
+  - "File persistence: Saves messages to JSON files for conversation history"
+  - "Cross-platform compatibility: Uses forward slashes in file paths"
+  - "Status tracking: Messages include 'pending' status for future completion tracking"
+  - "Mock responses: Returns structured JSON responses that match expected format"
+
+next_steps_refactor:
+  - "Review code for potential improvements and cleanups"
+  - "Ensure error handling is robust"
+  - "Consider edge cases not covered by current tests"
+  - "Prepare for integration with actual Orion proxy communication"
+
+created: "2025-12-12"
+updated: "2025-12-12"

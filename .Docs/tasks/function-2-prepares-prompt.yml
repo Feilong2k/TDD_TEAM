@@ -1,0 +1,69 @@
+function:
+  number: 2
+  name: "Prepares the Prompt"
+  purpose: "Combines Orion's system prompt, conversation history, and the new user message into a single formatted prompt for Cline."
+
+resources:
+  system_prompt_file: "agents/system_prompt_orion.md"
+  conversation_history_files:
+    - "data/conversations/project_{id}.json"
+    - "data/conversations/task_{id}.json"
+  prompt_formatting_logic: "formatPrompt() method in wrapper"
+
+conversation_history_structure:
+  json: |
+    {
+      "conversations": [
+        {
+          "role": "user|assistant",
+          "content": "message text",
+          "timestamp": "ISO 8601 date string"
+        }
+      ]
+    }
+
+example_output: |
+  [System prompt content]
+
+  Previous conversation:
+  User: Hello
+  Orion: {"response_type": "conversation", ...}
+
+  User: I need to add user authentication.
+  Orion (respond in JSON only):
+
+test_cases:
+  - "Should correctly format prompt with empty conversation history."
+  - "Should include up to last N messages from history (to avoid token limits)."
+  - "Should handle special characters and newlines in messages."
+  - "Should include the reminder 'Orion (respond in JSON only):' at the end."
+
+implementation_status:
+  tdd_phase: "Not started"
+  status: "Pending implementation"
+  last_updated: "2025-12-12"
+
+implementation_requirements:
+  - "Load system prompt from file"
+  - "Load conversation history from appropriate file (project or task)"
+  - "Format conversation history into readable text"
+  - "Combine system prompt, history, and new message with appropriate separators"
+  - "Add JSON response reminder at the end"
+
+notes:
+  - "System prompt contains Orion's role, response format rules, workflow rules, and examples"
+  - "Conversation history files store previous messages for a project or task"
+  - "Prompt formatting logic concatenates components with appropriate separators"
+
+key_considerations:
+  - "Token limits may require truncating long conversation history"
+  - "Need to handle both project and task conversation files"
+  - "System prompt should be included as context for each request"
+  - "Format should make it clear where user message ends and Orion's response should begin"
+
+dependencies:
+  - "Function 1: Receives Messages (for getting user message and context)"
+  - "Function 6: Saves Conversations (for loading conversation history)"
+
+created: "2025-12-12"
+updated: "2025-12-12"

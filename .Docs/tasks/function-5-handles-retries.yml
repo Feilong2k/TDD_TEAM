@@ -1,0 +1,91 @@
+function:
+  number: 5
+  name: "Handles Retries"
+  purpose: "If Orion's response is invalid JSON, retry with a reminder about the required format."
+
+resources:
+  retry_configuration:
+    max_retries: "2 (configurable)"
+    delay_between_retries: "0 (immediate, but can be adjusted)"
+  prompt_modification_for_retry: "Append reminder about JSON format"
+  retry_tracking: "Loop in sendMessage() method"
+
+retry_prompt_modification: |
+  "\n\nRemember: You must respond with valid JSON only. Use the exact structure specified in the system prompt. If your previous response was not valid JSON, correct it."
+
+test_cases:
+  - "Should retry when JSON is invalid."
+  - "Should append reminder to prompt on retry."
+  - "Should stop after max retries and return fallback response."
+  - "Should not retry on network/proxy errors (only on invalid JSON)."
+
+implementation_status:
+  tdd_phase: "Not started"
+  status: "Pending implementation"
+  last_updated: "2025-12-12"
+
+implementation_requirements:
+  - "Track retry attempts for each message"
+  - "Modify prompt with reminder on retry"
+  - "Limit retries to configured maximum"
+  - "Return fallback response after max retries"
+  - "Distinguish between JSON validation errors and other errors (network, proxy, etc.)"
+  - "Maintain conversation context across retries"
+
+retry_workflow:
+  1. "Send initial prompt to Orion"
+  2. "Receive response"
+  3. "Validate response (Function 4)"
+  4. "If validation fails and retry count < max_retries:"
+     - "Increment retry count"
+     - "Append reminder to prompt"
+     - "Go back to step 1"
+  5. "If validation fails and retry count >= max_retries:"
+     - "Return fallback response"
+  6. "If validation succeeds:"
+     - "Return validated response"
+
+fallback_response_structure:
+  json: |
+    {
+      "response_type": "conversation",
+      "content": {
+        "message": "I apologize, but I'm having trouble generating a valid response. Please try rephrasing your request."
+      },
+      "metadata": {
+        "task_id": null,
+        "project_id": "current_project_id",
+        "requires_action": false,
+        "next_step": "retry_with_different_prompt",
+        "timestamp": "ISO 8601 string",
+        "error": "Max retries exceeded",
+        "original_error": "brief_error_description"
+      }
+    }
+
+key_considerations:
+  - "Retry only on JSON validation errors, not other error types"
+  - "Maintain conversation history context across retries"
+  - "Avoid infinite retry loops"
+  - "Provide helpful fallback responses"
+  - "Log retry attempts for debugging"
+
+dependencies:
+  - "Function 4: Validates Responses (to determine if retry is needed)"
+  - "Function 2: Prepares the Prompt (to modify prompt for retry)"
+  - "Function 3: Calls Cline via Proxy (to resend modified prompt)"
+
+configuration_options:
+  max_retries: "Configurable (default: 2)"
+  retry_delay: "Configurable delay between retries (default: 0)"
+  reminder_text: "Configurable reminder message"
+  fallback_response: "Configurable fallback response"
+
+error_handling:
+  json_validation_errors: "Retry with reminder"
+  network_errors: "No retry, immediate failure"
+  proxy_errors: "No retry, immediate failure"
+  timeout_errors: "No retry, immediate failure"
+
+created: "2025-12-12"
+updated: "2025-12-12"

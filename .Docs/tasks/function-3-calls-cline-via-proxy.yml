@@ -1,0 +1,72 @@
+function:
+  number: 3
+  name: "Calls Cline via Proxy"
+  purpose: "Sends the formatted prompt to Cline via an HTTP proxy and retrieves Orion's response."
+
+resources:
+  http_proxy_server: "Running on VM at 192.168.0.4:9001"
+  proxy_endpoint: "POST /orion"
+  proxy_configuration:
+    url: "http://192.168.0.4:9001/orion"
+    timeout: "120 seconds (configurable)"
+    instance_management: "The proxy handles checking/starting Cline instances"
+  command_construction_logic: "executeCline() method in wrapper"
+
+proxy_request_structure:
+  json: |
+    {
+      "instance": "127.0.0.1:38937",
+      "context": "system prompt string",
+      "clineCommand": ["cline", "task", "new", "--mode", "plan", "--output-format", "json", "--no-interactive", "prompt text"]
+    }
+
+proxy_response_structure:
+  json: |
+    {
+      "exitCode": 0,
+      "stdout": "Cline output including JSON response",
+      "stderr": "",
+      "timestamp": "ISO 8601 string"
+    }
+
+test_cases:
+  - "Should successfully send request to proxy and receive response."
+  - "Should handle proxy timeouts gracefully."
+  - "Should handle proxy errors (non-200 responses)."
+  - "Should extract JSON from stdout (using regex if needed)."
+
+implementation_status:
+  tdd_phase: "Not started"
+  status: "Pending implementation"
+  last_updated: "2025-12-12"
+
+implementation_requirements:
+  - "Construct Cline command array based on mode and prompt"
+  - "Send HTTP POST request to proxy endpoint"
+  - "Handle timeout configuration"
+  - "Parse proxy response"
+  - "Extract JSON from stdout (may require regex extraction)"
+  - "Handle various error conditions (network, proxy, timeout)"
+
+notes:
+  - "NOTE: How long do we wait for Orion's response? maybe start with 3 minute? I think there's a way to view the task streaming, so what about stopping and restarting Orion if he is the code is stuck for more than 2 minutes? need to figure out how this can be done, any recommendations?"
+
+key_considerations:
+  - "Timeout handling: Need appropriate timeout for Orion responses"
+  - "Error handling: Network errors, proxy errors, Cline execution errors"
+  - "JSON extraction: May need regex to extract JSON from surrounding text/warnings"
+  - "Instance management: Proxy handles Cline instance lifecycle"
+  - "Response validation: Initial validation before passing to Function 4"
+
+dependencies:
+  - "Function 2: Prepares the Prompt (for formatted prompt)"
+  - "Function 8: Manages Context (for system prompt context)"
+
+open_questions:
+  - "What is the optimal timeout duration for Orion responses?"
+  - "Should we implement retry logic for timeouts?"
+  - "How to handle Cline instance failures or restarts?"
+  - "Should we implement streaming response monitoring?"
+
+created: "2025-12-12"
+updated: "2025-12-12"

@@ -1,0 +1,98 @@
+function:
+  number: 6
+  name: "Saves Conversations"
+  purpose: "Stores all messages (user and Orion) in JSON files for persistence and context."
+
+resources:
+  conversation_directory_structure: "data/conversations/"
+  file_types:
+    project_files: "project_{projectId}.json"
+    task_files: "task_{taskId}.json"
+  file_io_operations:
+    read: "loadConversationHistory()"
+    write: "saveConversationHistory()"
+    directory_creation: "Ensure data/conversations/ exists"
+
+conversation_data_model:
+  message_structure: |
+    {
+      "role": "user|assistant",
+      "content": "For user: plain text. For assistant: JSON string of Orion's response.",
+      "timestamp": "ISO 8601 timestamp",
+      "message_id": "optional_unique_id",
+      "status": "pending|completed|failed"
+    }
+  file_structure: |
+    {
+      "conversations": [
+        { /* message object */ }
+      ],
+      "metadata": {
+        "project_id": "P-001",
+        "task_id": "P-001-T-001",
+        "last_updated": "ISO 8601 timestamp",
+        "message_count": 5
+      }
+    }
+
+test_cases:
+  - "Should create new conversation file if none exists."
+  - "Should append new messages to existing conversation."
+  - "Should handle file read/write errors gracefully."
+  - "Should use correct file path based on projectId and taskId."
+
+implementation_status:
+  tdd_phase: "Partially implemented"
+  status: "saveConversationHistory() implemented, loadConversationHistory() pending"
+  last_updated: "2025-12-12"
+  notes: "saveConversationHistory() is implemented in Function 1 implementation"
+
+implementation_requirements:
+  - "Create conversation directory if it doesn't exist"
+  - "Read existing conversation file (if exists)"
+  - "Parse JSON content (handle parsing errors)"
+  - "Append new messages to conversations array"
+  - "Update metadata (last_updated, message_count)"
+  - "Write updated content back to file"
+  - "Handle file I/O errors gracefully"
+
+file_path_logic:
+  project_conversations: "data/conversations/project_{projectId}.json"
+  task_conversations: "data/conversations/task_{taskId}.json"
+  determination: "If taskId is provided, use task file; otherwise use project file"
+
+metadata_management:
+  initial_metadata: |
+    {
+      "project_id": "current_project_id",
+      "task_id": "current_task_id_or_null",
+      "last_updated": "current_timestamp",
+      "message_count": 0
+    }
+  update_on_save:
+    - "Update last_updated to current timestamp"
+    - "Update message_count to conversations.length"
+
+error_handling:
+  file_read_errors: "Create new conversation structure"
+  json_parse_errors: "Create new conversation structure"
+  file_write_errors: "Log error, throw exception"
+  directory_creation_errors: "Log error, throw exception"
+
+dependencies:
+  - "Function 1: Receives Messages (for saving user messages)"
+  - "Function 3: Calls Cline via Proxy (for saving Orion responses)"
+
+integration_points:
+  user_messages: "Saved immediately when received (Function 1)"
+  orion_responses: "Saved after validation (Function 4)"
+  status_updates: "Messages updated from 'pending' to 'completed' after Orion response"
+
+notes:
+  - "Messages should be recorded in conversation files, not a separate message.json"
+  - "Message status: 'pending' initially, updated to 'completed' when Orion replies"
+  - "Conversation files are created automatically when first message is sent"
+  - "Both project and task conversation files maintained for context"
+
+created: "2025-12-12"
+updated: "2025-12-12"

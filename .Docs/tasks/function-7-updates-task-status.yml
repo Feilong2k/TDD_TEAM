@@ -1,0 +1,109 @@
+function:
+  number: 7
+  name: "Updates Task Status"
+  purpose: "When Orion's response includes status updates, modify the central task tracking file."
+
+resources:
+  tasks_file: "data/tasks.json"
+  status_update_logic: "updateTaskStatus() method"
+  integration_with_response_parsing: "Triggered when response_type is status_update"
+
+tasks_file_structure:
+  json: |
+    {
+      "tasks": {
+        "P-001-T-001": {
+          "id": "P-001-T-001",
+          "project_id": "P-001",
+          "title": "Optional title from decomposition",
+          "description": "Optional description",
+          "status": "pending|in_progress|completed|blocked",
+          "created_at": "ISO 8601 timestamp",
+          "updated_at": "ISO 8601 timestamp",
+          "last_message": "Optional last message about this task",
+          "assignee": "Tara|Devon|Orion",
+          "subtasks": [
+            {
+              "id": "P-001-T-001-1",
+              "title": "Write failing test",
+              "description": "...",
+              "assignee": "Tara",
+              "status": "pending"
+            }
+          ]
+        }
+      },
+      "last_id": "P-001-T-001"
+    }
+
+status_update_trigger:
+  response_type: "status_update"
+  content_structure: |
+    {
+      "updates": [
+        {
+          "id": "task or subtask ID",
+          "status": "pending|in_progress|completed|blocked",
+          "message": "Optional explanation"
+        }
+      ]
+    }
+
+test_cases:
+  - "Should update existing task status."
+  - "Should create new task entry if taskId doesn't exist."
+  - "Should update updated_at timestamp."
+  - "Should handle multiple updates in one response."
+
+implementation_status:
+  tdd_phase: "Not started"
+  status: "Pending implementation"
+  last_updated: "2025-12-12"
+
+implementation_requirements:
+  - "Parse status_update response content"
+  - "Load existing tasks.json file"
+  - "For each update in updates array:"
+    - "If task exists: update status and updated_at"
+    - "If task doesn't exist: create new entry with basic metadata"
+  - "Save updated tasks.json file"
+  - "Handle file I/O errors gracefully"
+
+update_types:
+  task_status_updates: "Update main task status"
+  subtask_status_updates: "Update subtask status within task"
+  task_creation: "Create new task entry if referenced task doesn't exist"
+  metadata_updates: "Update last_message, assignee, etc."
+
+notes:
+  - "NOTE: How does wrapper know Orion indicated task status change? is it easier to adjust the status each time?"
+  - "Response: The wrapper knows based on response_type. When Orion sends a status_update response type with updates array, the wrapper processes those updates."
+
+key_considerations:
+  - "Task creation: May need to create task entries if referenced in updates but not in tasks.json"
+  - "Subtask handling: Need to handle updates for subtasks within tasks"
+  - "Concurrent access: Multiple processes might try to update tasks.json simultaneously"
+  - "Error recovery: Handle partial updates if some updates succeed and others fail"
+
+dependencies:
+  - "Function 4: Validates Responses (to identify status_update responses)"
+  - "Function 6: Saves Conversations (task updates may be logged in conversation history)"
+
+integration_with_other_functions:
+  decomposition_responses: "New tasks created from decomposition response subtasks"
+  status_update_responses: "Task statuses updated from status_update responses"
+  conversation_history: "Task updates may be referenced in conversation messages"
+
+field_details:
+  tasks: "Object where keys are task IDs and values are task objects"
+  id: "Unique identifier following pattern {projectId}-T-{sequence}"
+  project_id: "Reference to the project this task belongs to"
+  status: "Current state; must be one of: pending, in_progress, completed, blocked"
+  created_at/updated_at: "ISO 8601 timestamps"
+  last_message: "Most recent message from Orion about this task"
+  assignee: "Which agent is currently responsible"
+  subtasks: "Array of subtasks from decomposition (optional)"
+  last_id: "The highest task ID generated, used for auto-increment"
+
+created: "2025-12-12"
+updated: "2025-12-12"

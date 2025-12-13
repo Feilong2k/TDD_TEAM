@@ -1,0 +1,111 @@
+function:
+  number: 9
+  name: "Manages Errors"
+  purpose: "Logs errors and exceptions for troubleshooting while providing user-friendly fallbacks."
+
+resources:
+  error_log_file: "data/logs/orion_errors.log"
+  fallback_response_generation: "User-friendly error response in expected JSON format"
+  error_types_to_handle:
+    - "Proxy connection errors"
+    - "JSON validation errors"
+    - "File I/O errors"
+    - "Timeout errors"
+
+error_log_file_details:
+  location: "data/logs/orion_errors.log"
+  format: "Timestamp - Error message - Context"
+  directory: "data/logs/ (auto-created if missing)"
+  rotation: "Optional log rotation for large files"
+
+test_cases:
+  - "Should write errors to log file with timestamp."
+  - "Should create log directory if it doesn't exist."
+  - "Should return valid JSON even on total failure."
+  - "Should not expose sensitive error details to user."
+
+implementation_status:
+  tdd_phase: "Not started"
+  status: "Pending implementation"
+  last_updated: "2025-12-12"
+
+implementation_requirements:
+  - "Create log directory if it doesn't exist"
+  - "Write error details to log file with timestamp"
+  - "Generate user-friendly fallback responses"
+  - "Handle different error types appropriately"
+  - "Protect sensitive information in error messages"
+  - "Ensure fallback responses follow expected JSON structure"
+
+error_types_and_handling:
+  proxy_connection_errors:
+    detection: "Network errors, connection refused, timeout"
+    handling: "Log error, return fallback response"
+    user_message: "Connection to Orion service failed. Please try again."
+  json_validation_errors:
+    detection: "Invalid JSON, missing required fields, schema violations"
+    handling: "Log error, trigger retry logic (Function 5)"
+    user_message: "Orion response format error. Retrying..."
+  file_io_errors:
+    detection: "File not found, permission denied, disk full"
+    handling: "Log error, use fallback data or empty state"
+    user_message: "System storage error. Some features may be limited."
+  timeout_errors:
+    detection: "Request timeout exceeded"
+    handling: "Log error, return timeout fallback"
+    user_message: "Orion is taking too long to respond. Please try a simpler request."
+
+fallback_response_structure:
+  json: |
+    {
+      "response_type": "conversation",
+      "content": {
+        "message": "User-friendly error message explaining issue without technical details"
+      },
+      "metadata": {
+        "task_id": "current_task_id_or_null",
+        "project_id": "current_project_id",
+        "requires_action": false,
+        "next_step": "suggested_action_for_user",
+        "timestamp": "ISO 8601 string",
+        "error_type": "general_error_category",
+        "retry_suggested": true|false
+      }
+    }
+
+log_entry_format:
+  timestamp: "ISO 8601 format"
+  error_type: "Category of error"
+  error_message: "Detailed error message"
+  context: "Relevant context (project_id, task_id, user_message, etc.)"
+  stack_trace: "Optional stack trace for debugging"
+  example: "2025-12-12T21:58:16.123Z - JSON_VALIDATION - Invalid JSON response from Orion - project: P-001, task: P-001-T-001"
+
+key_considerations:
+  - "User experience: Provide helpful but non-technical error messages"
+  - "Security: Don't expose sensitive information in error responses"
+  - "Debugging: Include sufficient detail in logs for troubleshooting"
+  - "Performance: Logging shouldn't significantly impact performance"
+  - "Reliability: Error handling itself should not fail"
+
+dependencies:
+  - "All other functions (error handling needed throughout wrapper)"
+  - "Function 5: Handles Retries (for JSON validation errors)"
+
+integration_points:
+  function_1: "Input validation errors"
+  function_3: "Proxy communication errors"
+  function_4: "JSON validation errors"
+  function_6: "File I/O errors for conversation files"
+  function_7: "File I/O errors for tasks.json"
+  function_8: "System prompt loading errors"
+
+configuration_options:
+  log_level: "error|warn|info|debug"
+  log_file_max_size: "Maximum log file size before rotation"
+  include_stack_traces: "Whether to include stack traces in logs"
+  sensitive_data_masking: "Mask sensitive data in logs"
+  fallback_message_detail: "Level of detail in user-facing error messages"
+
+created: "2025-12-12"
+updated: "2025-12-12"

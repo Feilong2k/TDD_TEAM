@@ -39,14 +39,14 @@ describe('OrionWrapperV2 - Function 1: Receives Messages', () => {
 
     test('should save user message to conversation file with pending status', async () => {
       // This test will fail because saveConversationHistory is not implemented
-      await wrapper.sendMessage('Test message');
+      await wrapper.sendMessage('hello');
       // Check that a message was saved to the conversation file
       const conversationPath = wrapper.getConversationFilePath(); // This method doesn't exist yet
       expect(fs.existsSync(conversationPath)).toBe(true);
       const data = JSON.parse(fs.readFileSync(conversationPath, 'utf8'));
       const lastMessage = data.conversations[data.conversations.length - 1];
       expect(lastMessage.role).toBe('user');
-      expect(lastMessage.content).toBe('Test message');
+      expect(lastMessage.content).toBe('hello');
       expect(lastMessage.status).toBe('pending');
     });
   });

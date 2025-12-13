@@ -1,0 +1,40 @@
+{
+  "id": "P1-T2-S2",
+  "task_id": "P1-T2",
+  "title": "Implement context logic in Orion wrapper",
+  "description": "Modify Orion wrapper to accept context parameter and adjust prompt accordingly",
+  "agent": "Devon",
+  "status": "pending",
+  "estimated_time": "3h",
+  "updated_at": null,
+  "updated_by": null,
+  "instructions": {
+    "tara": "Test the Orion wrapper with the context parameter. Verify that the prompt changes appropriately.",
+    "devon": "Modify the Orion wrapper to accept a context parameter (full/minimal) and adjust the prompt accordingly.",
+    "orion": "Review the context handling logic. Suggest how to best structure the context for the LLM."
+  },
+  "notes": "The context parameter should significantly affect the prompt sent to Orion.",
+  "key_considerations": [
+    "Define what constitutes full vs. minimal context",
+    "Ensure the system prompt adapts correctly",
+    "Test with various conversation histories"
+  ],
+  "dependencies": [
+    "P1-T1-S2",
+    "P1-T2-S1"
+  ],
+  "activity_log": [
+    {
+      "id": "act-1765637685484-aryajr94f",
+      "type": "progress_update",
+      "agent": "System",
+      "content": "Details populated for P1-T2-S2.",
+      "timestamp": "2025-12-13T14:54:45.484Z",
+      "status": "resolved",
+      "parent_id": null,
+      "replies": [],
+      "attachments": [],
+      "metadata": {}
+    }
+  ]
+}

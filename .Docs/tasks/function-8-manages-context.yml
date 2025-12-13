@@ -1,0 +1,85 @@
+function:
+  number: 8
+  name: "Manages Context"
+  purpose: "Sends Orion's system prompt as context to Cline instances for persistent memory."
+
+resources:
+  context_parameter_in_proxy_request: "context field in POST body to /orion"
+  system_prompt_loading: "loadSystemPrompt() method"
+  context_optimization_considerations: "May not need full prompt every time"
+
+proxy_request_with_context:
+  json: |
+    {
+      "instance": "127.0.0.1:38937",
+      "context": "system prompt string",
+      "clineCommand": ["cline", "task", "new", "--mode", "plan", "--output-format", "json", "--no-interactive", "prompt text"]
+    }
+
+test_cases:
+  - "Should load system prompt from file."
+  - "Should include context in proxy request."
+  - "Should handle missing system prompt file gracefully."
+
+implementation_status:
+  tdd_phase: "Not started"
+  status: "Pending implementation"
+  last_updated: "2025-12-12"
+
+implementation_requirements:
+  - "Read system prompt from agents/system_prompt_orion.md"
+  - "Handle file read errors (missing file, permissions, etc.)"
+  - "Include system prompt in proxy request context field"
+  - "Optionally optimize context (summarize or send only changes)"
+  - "Cache system prompt to avoid reading file repeatedly"
+
+system_prompt_file:
+  location: "agents/system_prompt_orion.md"
+  content: "Orion's role, response format rules, workflow rules, and examples"
+  properties: "Plain text markdown file read as a string"
+
+notes:
+  - "NOTE: Do we need to send the prompt with every message? Instance context is retained by Orions, but we can send task specific contexts to Orion."
+
+context_optimization_options:
+  full_prompt_every_time: "Send entire system prompt with each request"
+  summarized_context: "Send summarized version or key points"
+  incremental_context: "Send only new context or changes"
+  cached_context: "Cache system prompt and send reference only"
+  hybrid_approach: "Send full prompt first time, incremental updates thereafter"
+
+key_considerations:
+  - "Token usage: Full system prompt may use significant tokens"
+  - "Instance memory: Cline instances may retain context between requests"
+  - "Context freshness: Need to ensure Orion has current context"
+  - "Performance: Reading and sending large prompt files may impact performance"
+  - "Error handling: Graceful degradation if system prompt file is missing"
+
+dependencies:
+  - "Function 3: Calls Cline via Proxy (to include context in request)"
+  - "Function 2: Prepares the Prompt (system prompt is part of formatted prompt)"
+
+integration_with_other_functions:
+  prompt_preparation: "System prompt is part of formatted prompt sent to Orion"
+  proxy_communication: "Context included in proxy request for Cline instance"
+  error_handling: "Fallback if system prompt cannot be loaded"
+
+error_handling_scenarios:
+  missing_file: "Use default fallback system prompt"
+  read_permission_error: "Log error, use fallback prompt"
+  file_too_large: "Truncate or summarize"
+  encoding_issues: "Handle different text encodings"
+
+fallback_system_prompt: |
+  You are Orion, an AI coding assistant. Respond in valid JSON format only.
+  Response types: clarification, decomposition, instruction, status_update, conversation.
+  Include required metadata fields in all responses.
+
+configuration_options:
+  context_strategy: "full|summarized|incremental|cached"
+  cache_ttl: "Time to cache system prompt (seconds)"
+  max_context_size: "Maximum context size in tokens/characters"
+  fallback_enabled: "Whether to use fallback if primary fails"
+
+created: "2025-12-12"
+updated: "2025-12-12"

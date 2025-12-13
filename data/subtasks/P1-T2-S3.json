@@ -1,0 +1,40 @@
+{
+  "id": "P1-T2-S3",
+  "task_id": "P1-T2",
+  "title": "Integrate checkbox with backend",
+  "description": "Connect frontend checkbox to backend context parameter",
+  "agent": "Devon",
+  "status": "pending",
+  "estimated_time": "2h",
+  "updated_at": null,
+  "updated_by": null,
+  "instructions": {
+    "tara": "Test the integration by toggling the checkbox and verifying the backend receives the correct context parameter.",
+    "devon": "Connect the frontend checkbox to the backend API. Pass the context parameter in the API call.",
+    "orion": "Review the integration for any potential issues. Suggest improvements for the API design."
+  },
+  "notes": "End-to-end testing is crucial for this feature.",
+  "key_considerations": [
+    "API parameter naming and consistency",
+    "Backward compatibility with existing calls",
+    "Error handling for missing parameters"
+  ],
+  "dependencies": [
+    "P1-T2-S1",
+    "P1-T2-S2"
+  ],
+  "activity_log": [
+    {
+      "id": "act-1765637685486-guv08k6n5",
+      "type": "progress_update",
+      "agent": "System",
+      "content": "Details populated for P1-T2-S3.",
+      "timestamp": "2025-12-13T14:54:45.486Z",
+      "status": "resolved",
+      "parent_id": null,
+      "replies": [],
+      "attachments": [],
+      "metadata": {}
+    }
+  ]
+}
