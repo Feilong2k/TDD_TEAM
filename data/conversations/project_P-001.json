@@ -1,0 +1,46 @@
+{
+  "conversations": [
+    {
+      "role": "user",
+      "content": "Hello",
+      "timestamp": "2025-12-13T02:03:26.373Z",
+      "status": "pending"
+    },
+    {
+      "role": "user",
+      "content": "Hello",
+      "timestamp": "2025-12-13T02:03:26.398Z",
+      "status": "pending"
+    },
+    {
+      "role": "user",
+      "content": "Test message",
+      "timestamp": "2025-12-13T02:03:26.403Z",
+      "status": "pending"
+    },
+    {
+      "role": "user",
+      "content": "Hello",
+      "timestamp": "2025-12-13T02:07:28.695Z",
+      "status": "pending"
+    },
+    {
+      "role": "user",
+      "content": "Hello",
+      "timestamp": "2025-12-13T02:07:28.708Z",
+      "status": "pending"
+    },
+    {
+      "role": "user",
+      "content": "Test message",
+      "timestamp": "2025-12-13T02:07:28.715Z",
+      "status": "pending"
+    }
+  ],
+  "metadata": {
+    "project_id": "P-001",
+    "task_id": null,
+    "last_updated": "2025-12-13T02:07:28.716Z",
+    "message_count": 6
+  }
+}

@@ -1,4 +1,6 @@
 const OrionWrapperV2 = require('../../../agents/orion-wrapper-v2');
+const fs = require('fs');
+const path = require('path');
 
 describe('OrionWrapperV2 - Function 1: Receives Messages', () => {
   let wrapper;
@@ -68,15 +70,16 @@ describe('OrionWrapperV2 - Function 1: Receives Messages', () => {
   describe('conversation file path', () => {
     test('should generate correct file path for project conversations', () => {
       const projectWrapper = new OrionWrapperV2('P-003');
-      // This test will fail because getConversationFilePath doesn't exist
-      const path = projectWrapper.getConversationFilePath();
-      expect(path).toContain('data/conversations/project_P-003.json');
+      const filePath = projectWrapper.getConversationFilePath();
+      // Check that the path ends with the expected relative path (with forward slashes)
+      expect(filePath).toMatch(/data\/conversations\/project_P-003\.json$/);
     });
 
     test('should generate correct file path for task conversations', () => {
       const taskWrapper = new OrionWrapperV2('P-003', 'P-003-T-001');
-      const path = taskWrapper.getConversationFilePath();
-      expect(path).toContain('data/conversations/task_P-003-T-001.json');
+      const filePath = taskWrapper.getConversationFilePath();
+      // Check that the path ends with the expected relative path (with forward slashes)
+      expect(filePath).toMatch(/data\/conversations\/task_P-003-T-001\.json$/);
     });
   });
 });
