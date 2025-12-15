@@ -1,0 +1,272 @@
+{
+  "feature": {
+    "id": "F2",
+    "title": "Orion/Aider Separation & Adapters",
+    "description": "Implement Orion as separate LLM agent and create Aider adapter with JSON extraction.",
+    "status": "in_progress",
+    "order_index": 2,
+    "tasks": [
+      {
+        "id": "2-1",
+        "feature_id": "F2",
+        "title": "Implement Orion as Direct LLM Agent",
+        "description": "Create Orion database tools, integrate DeepSeek API, build Orion wrapper with database tool calling.",
+        "status": "pending",
+        "agent": "Devon",
+        "subtasks": [
+          {
+            "id": "2-1-1",
+            "task_id": "2-1",
+            "feature_id": "F2",
+            "title": "Define semantic tool schemas for database operations",
+            "description": "Create tool schemas for common operations: db_get_subtask_by_id, db_list_subtasks_by_status, db_update_subtask_status, db_append_subtask_log, db_search_subtasks_by_keyword",
+            "status": "pending",
+            "agent": "Devon",
+            "dependencies": [],
+            "priority": "high",
+            "estimated_time": "3h",
+            "risk_level": "medium"
+          },
+          {
+            "id": "2-1-2",
+            "task_id": "2-1",
+            "feature_id": "F2",
+            "title": "Implement safe-SQL tools with DDL restrictions",
+            "description": "Create controlled schema evolution tools: db_add_column_to_table, db_create_table_from_migration. Block DROP TABLE, TRUNCATE, DELETE operations.",
+            "status": "pending",
+            "agent": "Devon",
+            "dependencies": ["2-1-1"],
+            "priority": "high",
+            "estimated_time": "3h",
+            "risk_level": "high"
+          },
+          {
+            "id": "2-1-3",
+            "task_id": "2-1",
+            "feature_id": "F2",
+            "title": "Integrate DeepSeek API with tool-calling prompt templates",
+            "description": "Set up DeepSeek API integration, create prompt templates for planning and CDP, implement conversation management with database logging.",
+            "status": "pending",
+            "agent": "Devon",
+            "dependencies": ["2-1-2"],
+            "priority": "medium",
+            "estimated_time": "4h",
+            "risk_level": "medium"
+          },
+          {
+            "id": "2-1-4",
+            "task_id": "2-1",
+            "feature_id": "F2",
+            "title": "Build Orion wrapper with Plan/Act mode tool locking",
+            "description": "Create Orion wrapper with mode-based tool restrictions (Cline-style), implement context aggregation from database and files.",
+            "status": "pending",
+            "agent": "Devon",
+            "dependencies": ["2-1-3"],
+            "priority": "medium",
+            "estimated_time": "4h",
+            "risk_level": "medium"
+          },
+          {
+            "id": "2-1-5",
+            "task_id": "2-1",
+            "feature_id": "F2",
+            "title": "Test end-to-end planning workflow with mock Orion",
+            "description": "Test Orion planning with database interaction, verify CDP analysis identifies constraints accurately, ensure planning completes within 2 minutes.",
+            "status": "pending",
+            "agent": "Tara",
+            "dependencies": ["2-1-4"],
+            "priority": "medium",
+            "estimated_time": "3h",
+            "risk_level": "low"
+          }
+        ]
+      },
+      {
+        "id": "2-2",
+        "feature_id": "F2",
+        "title": "Build Aider Adapter with JSON Extraction",
+        "description": "Create wrapper for Aider CLI execution, implement natural language JSON extraction and validation, add retry logic for failed JSON parsing.",
+        "status": "pending",
+        "agent": "Devon",
+        "subtasks": [
+          {
+            "id": "2-2-1",
+            "task_id": "2-2",
+            "feature_id": "F2",
+            "title": "Build Aider CLI wrapper with timeout handling",
+            "description": "Create module to execute Aider commands programmatically, implement context passing, add timeout and error handling for long-running commands.",
+            "status": "pending",
+            "agent": "Devon",
+            "dependencies": [],
+            "priority": "high",
+            "estimated_time": "4h",
+            "risk_level": "medium"
+          },
+          {
+            "id": "2-2-2",
+            "task_id": "2-2",
+            "feature_id": "F2",
+            "title": "Implement JSON extraction layer with validation",
+            "description": "Create natural language JSON parsing utilities, add validation against expected schemas, implement retry logic for failed JSON parsing.",
+            "status": "pending",
+            "agent": "Devon",
+            "dependencies": ["2-2-1"],
+            "priority": "high",
+            "estimated_time": "5h",
+            "risk_level": "high"
+          },
+          {
+            "id": "2-2-3",
+            "task_id": "2-2",
+            "feature_id": "F2",
+            "title": "Integrate with database status change hooks",
+            "description": "Create webhook system for database status changes, map status values to Aider execution modes (Tara/Devon), implement result logging back to database.",
+            "status": "pending",
+            "agent": "Devon",
+            "dependencies": ["2-2-2"],
+            "priority": "medium",
+            "estimated_time": "5h",
+            "risk_level": "medium"
+          },
+          {
+            "id": "2-2-4",
+            "task_id": "2-2",
+            "feature_id": "F2",
+            "title": "Test Tara → Devon → Tara execution cycle",
+            "description": "Test complete Aider execution cycle, verify JSON extraction success rate >90%, ensure results logged to database automatically.",
+            "status": "pending",
+            "agent": "Tara",
+            "dependencies": ["2-2-3"],
+            "priority": "medium",
+            "estimated_time": "4h",
+            "risk_level": "low"
+          }
+        ]
+      },
+      {
+        "id": "2-3",
+        "feature_id": "F2",
+        "title": "Status-Driven Workflow Triggers",
+        "description": "Create webhook system for status changes, implement agent dispatch based on subtask status, add logging and error handling for failed executions.",
+        "status": "pending",
+        "agent": "Devon",
+        "subtasks": [
+          {
+            "id": "2-3-1",
+            "task_id": "2-3",
+            "feature_id": "F2",
+            "title": "Create webhook system for status changes",
+            "description": "Implement database triggers or polling mechanism to detect status changes, create event dispatcher for agent execution.",
+            "status": "pending",
+            "agent": "Devon",
+            "dependencies": [],
+            "priority": "medium",
+            "estimated_time": "3h",
+            "risk_level": "medium"
+          },
+          {
+            "id": "2-3-2",
+            "task_id": "2-3",
+            "feature_id": "F2",
+            "title": "Implement agent dispatch based on subtask status",
+            "description": "Map status values to agent actions: ready_for_tara → Aider (Tara), ready_for_devon → Aider (Devon), ready_for_review → Aider (Tara).",
+            "status": "pending",
+            "agent": "Devon",
+            "dependencies": ["2-3-1"],
+            "priority": "medium",
+            "estimated_time": "3h",
+            "risk_level": "low"
+          },
+          {
+            "id": "2-3-3",
+            "task_id": "2-3",
+            "feature_id": "F2",
+            "title": "Add logging and error handling for failed executions",
+            "description": "Implement comprehensive error logging, add retry logic for failed agent executions, create UI notifications for failed operations.",
+            "status": "pending",
+            "agent": "Devon",
+            "dependencies": ["2-3-2"],
+            "priority": "low",
+            "estimated_time": "2h",
+            "risk_level": "low"
+          }
+        ]
+      },
+      {
+        "id": "2-4",
+        "feature_id": "F2",
+        "title": "UI-Database Integration",
+        "description": "Connect frontend to PostgreSQL database, update backend APIs, test end-to-end data flow.",
+        "status": "completed",
+        "agent": "Devon",
+        "subtasks": [
+          {
+            "id": "2-4-1",
+            "task_id": "2-4",
+            "feature_id": "F2",
+            "title": "Analyze current API endpoints and database schema for UI integration",
+            "description": "Review frontend TaskList.vue API calls, examine backend server.js endpoints, check database schema for missing tables, identify gaps between current JSON structure and database schema.",
+            "status": "completed",
+            "agent": "Devon",
+            "dependencies": [],
+            "priority": "medium",
+            "estimated_time": "1h",
+            "risk_level": "low"
+          },
+          {
+            "id": "2-4-2",
+            "task_id": "2-4",
+            "feature_id": "F2",
+            "title": "Create database tables for features and tasks if missing",
+            "description": "Create migration for features table, create migration for tasks table, update subtasks table to include task_id and feature_id foreign keys, run migrations to update database schema.",
+            "status": "completed",
+            "agent": "Devon",
+            "dependencies": [],
+            "priority": "medium",
+            "estimated_time": "2h",
+            "risk_level": "medium"
+          },
+          {
+            "id": "2-4-3",
+            "task_id": "2-4",
+            "feature_id": "F2",
+            "title": "Implement database queries for project structure",
+            "description": "Create db.features module with getAll, getById methods, create db.tasks module with getByFeature, getAll methods, create db.subtasks module with getByTask, getAllWithDetails methods, implement joint query to fetch full project structure.",
+            "status": "completed",
+            "agent": "Devon",
+            "dependencies": [],
+            "priority": "medium",
+            "estimated_time": "3h",
+            "risk_level": "medium"
+          },
+          {
+            "id": "2-4-4",
+            "task_id": "2-4",
+            "feature_id": "F2",
+            "title": "Update backend API endpoints to use database",
+            "description": "Update /api/project endpoint to fetch from database instead of JSON file, create /api/features endpoint for feature-specific data, create /api/tasks endpoint for task management, ensure /api/subtask/:id endpoint works with database, add error handling and validation.",
+            "status": "completed",
+            "agent": "Devon",
+            "dependencies": [],
+            "priority": "medium",
+            "estimated_time": "2h",
+            "risk_level": "medium"
+          },
+          {
+            "id": "2-4-5",
+            "task_id": "2-4",
+            "feature_id": "F2",
+            "title": "Update frontend to use enhanced APIs and test integration",
+            "description": "Verify frontend TaskList.vue works with updated /api/project endpoint, test subtask modal with /api/subtask/:id endpoint, add loading states and error handling in UI, test end-to-end data flow from database to UI.",
+            "status": "completed",
+            "agent": "Devon",
+            "dependencies": [],
+            "priority": "medium",
+            "estimated_time": "3h",
+            "risk_level": "high"
+          }
+        ]
+      }
+    ]
+  }
+}

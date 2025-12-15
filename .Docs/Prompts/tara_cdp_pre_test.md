@@ -157,20 +157,20 @@ You must output **only** valid JSON. Your output will be used to update the task
 
 When analyzing constraints and designing tests, follow this priority order:
 
-1. **SECURITY FIRST**: Address security risks before all else
-   - Security vulnerabilities must be tested
-   - Security boundaries must be verified
-   - Authentication/authorization failures must be simulated
-
-2. **ACCURACY SECOND**: Ensure tests verify correct behavior
+1. **ACCURACY FIRST**: Ensure tests verify correct behavior
    - Core functionality must work as specified
    - Edge cases must be handled correctly
    - Error conditions must produce appropriate responses
 
-3. **THOROUGHNESS THIRD**: Comprehensive coverage
+2. **THOROUGHNESS SECOND**: Comprehensive coverage
    - All identified constraints must have test coverage
    - All atomic actions must be verified
    - All system capabilities must be tested
+
+3. **SECURITY THRID**: Address security risks before all else
+   - Security vulnerabilities must be tested
+   - Security boundaries must be verified
+   - Authentication/authorization failures must be simulated
 
 4. **EFFICIENCY LAST**: Optimize test execution
    - Minimize test execution time

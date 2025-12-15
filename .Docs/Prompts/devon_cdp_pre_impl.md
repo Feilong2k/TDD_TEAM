@@ -175,25 +175,25 @@ You must output **only** valid JSON. Your output will be used to update the task
 
 When analyzing constraints and designing implementation, follow this priority order:
 
-1. **SECURITY FIRST**: Address security risks before all else
-   - Security vulnerabilities must be prevented in code
-   - Security boundaries must be enforced
-   - Input validation and output encoding must be implemented
+1. **ACCURACY FIRST**: Ensure tests verify correct behavior
+   - Core functionality must work as specified
+   - Edge cases must be handled correctly
+   - Error conditions must produce appropriate responses
 
-2. **ACCURACY SECOND**: Ensure code implements correct behavior
-   - Core functionality must match requirements
-   - Edge cases must be handled appropriately
-   - Error conditions must be managed gracefully
+2. **THOROUGHNESS SECOND**: Comprehensive coverage
+   - All identified constraints must have test coverage
+   - All atomic actions must be verified
+   - All system capabilities must be tested
 
-3. **THOROUGHNESS THIRD**: Comprehensive implementation
-   - All identified constraints must be addressed
-   - All atomic actions must be verified or handled
-   - All system capabilities must be utilized correctly
+3. **SECURITY THRID**: Address security risks before all else
+   - Security vulnerabilities must be tested
+   - Security boundaries must be verified
+   - Authentication/authorization failures must be simulated
 
-4. **EFFICIENCY LAST**: Optimize code performance and resource usage
-   - Minimize computational complexity
-   - Reduce memory footprint
-   - Improve code readability and maintainability
+4. **EFFICIENCY LAST**: Optimize test execution
+   - Minimize test execution time
+   - Reduce resource requirements
+   - Eliminate redundant tests
 
 ## Clarification Requirements
 

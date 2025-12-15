@@ -1,0 +1,136 @@
+{
+  "response_type": "decomposition",
+  "workflow_step": "adam_decomposition",
+  "task_updates": {
+    "task_id": "2-4",
+    "status": "completed",
+    "phase": "adam_decomposition",
+    "assignee": "adam"
+  },
+  "decomposition": {
+    "subtasks": [
+      {
+        "id": "2-4-1",
+        "title": "Analyze current API endpoints and database schema for UI integration",
+        "dependencies": [],
+        "required_actions": [
+          "Review frontend TaskList.vue API calls",
+          "Examine backend server.js endpoints for project data",
+          "Check database schema for missing tables (phases, tasks)",
+          "Identify gaps between current JSON structure and database schema"
+        ],
+        "relevant_files": [
+          "frontend/src/components/TaskList.vue",
+          "backend/server.js",
+          "backend/db.js",
+          "backend/src/db/migrations/001_create_subtasks.sql",
+          "archive/data/project.json"
+        ],
+        "acceptance_criteria": [
+          "Document all API endpoints used by frontend",
+          "List database tables needed to replace JSON project structure",
+          "Create mapping between JSON fields and database columns"
+        ],
+        "estimated_time": "1h",
+        "risk_level": "low"
+      },
+      {
+        "id": "2-4-2",
+        "title": "Create database tables for phases and tasks if missing",
+        "dependencies": ["2-4-1"],
+        "required_actions": [
+          "Create migration for phases table",
+          "Create migration for tasks table (if not exists)",
+          "Update subtasks table to include task_id and phase_id foreign keys",
+          "Run migrations to update database schema"
+        ],
+        "relevant_files": [
+          "backend/src/db/migrations/",
+          "backend/db/schema.sql",
+          "backend/src/db/connection.js"
+        ],
+        "acceptance_criteria": [
+          "Phases table exists with columns: id, title, description, status, order_index",
+          "Tasks table exists with columns: id, phase_id, title, description, status, agent, subtask_ids array",
+          "Subtasks table has foreign key references to tasks and phases",
+          "Migrations run successfully without errors"
+        ],
+        "estimated_time": "2h",
+        "risk_level": "medium"
+      },
+      {
+        "id": "2-4-3",
+        "title": "Implement database queries for project structure",
+        "dependencies": ["2-4-2"],
+        "required_actions": [
+          "Create db.phases module with getAll, getById methods",
+          "Create db.tasks module with getByPhase, getAll methods",
+          "Create db.subtasks module with getByTask, getAllWithDetails methods",
+          "Implement joint query to fetch full project structure (phases -> tasks -> subtasks)"
+        ],
+        "relevant_files": [
+          "backend/db.js",
+          "backend/src/db/connection.js",
+          "backend/src/tools/DatabaseTool.js"
+        ],
+        "acceptance_criteria": [
+          "db.phases.getAll() returns all phases with tasks",
+          "db.tasks.getByPhase(phaseId) returns tasks for a phase",
+          "db.subtasks.getByTask(taskId) returns subtasks for a task",
+          "Single query can fetch entire project hierarchy efficiently"
+        ],
+        "estimated_time": "3h",
+        "risk_level": "medium"
+      },
+      {
+        "id": "2-4-4",
+        "title": "Update backend API endpoints to use database",
+        "dependencies": ["2-4-3"],
+        "required_actions": [
+          "Update /api/project endpoint to fetch from database instead of JSON file",
+          "Create /api/phases endpoint for phase-specific data",
+          "Create /api/tasks endpoint for task management",
+          "Ensure /api/subtask/:id endpoint works with database (already exists)",
+          "Add error handling and validation"
+        ],
+        "relevant_files": [
+          "backend/server.js",
+          "backend/db.js"
+        ],
+        "acceptance_criteria": [
+          "/api/project returns same structure as archive/data/project.json but from database",
+          "All endpoints return appropriate HTTP status codes",
+          "Error messages are clear and actionable",
+          "API responses are consistent with frontend expectations"
+        ],
+        "estimated_time": "2h",
+        "risk_level": "medium"
+      },
+      {
+        "id": "2-4-5",
+        "title": "Update frontend to use enhanced APIs and test integration",
+        "dependencies": ["2-4-4"],
+        "required_actions": [
+          "Verify frontend TaskList.vue works with updated /api/project endpoint",
+          "Test subtask modal with /api/subtask/:id endpoint",
+          "Add loading states and error handling in UI",
+          "Test end-to-end data flow from database to UI"
+        ],
+        "relevant_files": [
+          "frontend/src/components/TaskList.vue",
+          "frontend/src/components/ChatPanel.vue",
+          "backend/server.js"
+        ],
+        "acceptance_criteria": [
+          "UI displays project data from database without errors",
+          "Subtask modal shows full details from database",
+          "Activity log additions work via POST /api/subtask/:subtaskId/activity",
+          "Real-time updates reflect database changes"
+        ],
+        "estimated_time": "3h",
+        "risk_level": "high"
+      }
+    ]
+  },
+  "message": "Decomposed UI-database integration (Feature 2.4) into 5 subtasks focusing on database schema, API updates, and frontend integration. This will replace JSON-based project structure with PostgreSQL, enabling real-time updates and better data consistency."
+}

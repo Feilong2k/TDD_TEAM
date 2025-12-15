@@ -4,7 +4,7 @@ const fs = require('fs');
 const { exec } = require('child_process');
 // OrionWrapperV2 removed - archived
 // const OrionWrapperV2 = require("../agents/orion-wrapper-v2");
-const { subtasks: dbSubtasks } = require('./db');
+const { features, tasks, subtasks } = require('./db');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -358,23 +358,72 @@ app.get("/api/projects", (req, res) => {
 
 /**
  * GET /api/project
- * Get the project structure with phases, tasks, and subtasks (lightweight)
+ * Get the project structure with features, tasks, and subtasks from database
  */
-app.get("/api/project", (req, res) => {
+app.get("/api/project", async (req, res) => {
   try {
-    const projectPath = path.join(dataDir, "project.json");
+    // Get all features with their tasks and subtasks
+    const allFeatures = await features.getAll();
+    
+    // Get all tasks (they are already included in features.getAll() but we need them for subtasks)
+    const allTasks = await tasks.getAll();
+    
+    // Get all subtasks
+    const allSubtasks = await subtasks.getAll();
 
-    if (!fs.existsSync(projectPath)) {
-      // Return empty structure if file doesn't exist
-      return res.json({
-        phases: [],
-        tasks: {},
-        subtasks: {},
-      });
-    }
+    // Transform the data to match the frontend expected structure
+    const transformedData = {
+      features: allFeatures.map(feature => ({
+        id: feature.id,
+        title: feature.title,
+        description: feature.description,
+        status: feature.status,
+        order_index: feature.order_index,
+        created_at: feature.created_at,
+        updated_at: feature.updated_at,
+        // Include tasks from the feature object (already aggregated by the query)
+        tasks: feature.tasks || []
+      })),
+      tasks: {},
+      subtasks: {}
+    };
 
-    const data = readJSONFile(projectPath);
-    res.json(data);
+    // Populate tasks map
+    allTasks.forEach(task => {
+      transformedData.tasks[task.id] = {
+        id: task.id,
+        feature_id: task.feature_id,
+        title: task.title,
+        description: task.description,
+        status: task.status,
+        agent: task.agent,
+        created_at: task.created_at,
+        updated_at: task.updated_at,
+        subtasks: task.subtasks || []
+      };
+    });
+
+    // Populate subtasks map
+    allSubtasks.forEach(subtask => {
+      transformedData.subtasks[subtask.id] = {
+        id: subtask.id,
+        task_id: subtask.task_id,
+        feature_id: subtask.feature_id,
+        title: subtask.title,
+        description: subtask.description,
+        status: subtask.status,
+        agent: subtask.agent,
+        dependencies: subtask.dependencies || [],
+        priority: subtask.priority,
+        estimated_time: subtask.estimated_time,
+        risk_level: subtask.risk_level,
+        created_at: subtask.created_at,
+        updated_at: subtask.updated_at,
+        activity_log: subtask.activity_logs || []
+      };
+    });
+
+    res.json(transformedData);
   } catch (error) {
     console.error("Error in /api/project:", error);
     res.status(500).json({
@@ -392,7 +441,7 @@ app.get("/api/subtask/:subtaskId", async (req, res) => {
   try {
     const { subtaskId } = req.params;
 
-    const subtask = await dbSubtasks.getById(subtaskId);
+    const subtask = await subtasks.getById(subtaskId);
     if (!subtask) {
       return res.status(404).json({
         error: "Subtask not found",
@@ -429,7 +478,7 @@ app.post("/api/subtask/:subtaskId/activity", async (req, res) => {
     const activity = req.body;
 
     // Check if subtask exists
-    const subtask = await dbSubtasks.getById(subtaskId);
+    const subtask = await subtasks.getById(subtaskId);
     if (!subtask) {
       return res.status(404).json({
         error: "Subtask not found",
@@ -447,36 +496,33 @@ app.post("/api/subtask/:subtaskId/activity", async (req, res) => {
 
     // Prepare activity data for database
     const activityData = {
-      actor: activity.agent,
-      kind: activity.type,
+      type: activity.type,
+      agent: activity.agent,
       content: activity.content,
-      meta: {
-        ...activity.metadata,
-        status: activity.status || "open",
-        parent_id: activity.parent_id || null,
-        attachments: activity.attachments || [],
-        replies: []
-      }
+      status: activity.status || "open",
+      parent_id: activity.parent_id || null,
+      attachments: activity.attachments || [],
+      metadata: activity.metadata || {}
     };
 
     // Add to database
-    const newActivity = await dbSubtasks.addActivityLog(subtaskId, activityData);
+    const newActivity = await subtasks.addActivityLog(subtaskId, activityData);
 
     // Return response
     res.json({
       success: true,
       activity: {
         id: newActivity.id,
-        type: newActivity.kind,
-        agent: newActivity.actor,
+        type: newActivity.type,
+        agent: newActivity.agent,
         content: newActivity.content,
-        timestamp: newActivity.created_at,
-        status: newActivity.meta?.status || "open",
-        parent_id: newActivity.meta?.parent_id || null,
-        attachments: newActivity.meta?.attachments || [],
-        metadata: newActivity.meta
+        timestamp: newActivity.timestamp,
+        status: newActivity.status,
+        parent_id: newActivity.parent_id,
+        attachments: newActivity.attachments,
+        metadata: newActivity.metadata
       },
-      updated_at: newActivity.created_at,
+      updated_at: newActivity.timestamp,
     });
   } catch (error) {
     console.error("Error in /api/subtask/:subtaskId/activity:", error);

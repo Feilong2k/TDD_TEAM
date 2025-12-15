@@ -13,9 +13,9 @@
         <div class="flex justify-between items-start p-6 border-b border-[#333333] sticky top-0 bg-[#1a1a1a] z-10">
           <div class="flex-1">
             <div class="flex items-center justify-between">
-              <h3 class="text-neon-blue font-bold text-2xl">{{ selectedSubtask.title }}</h3>
-              <div class="flex space-x-4 text-sm text-gray-400">
-                <div>Phase: <span class="text-gray-300 font-medium">{{ selectedPhaseInfo.id }}</span></div>
+              <h3 class="text-neon-blue font-bold text-2xl">[{{ selectedSubtask.id }}] {{ selectedSubtask.title }}</h3>
+                <div class="flex space-x-4 text-sm text-gray-400">
+                <div>Feature: <span class="text-gray-300 font-medium">{{ selectedFeatureInfo.id }}</span></div>
                 <div>Task: <span class="text-gray-300 font-medium">{{ selectedTaskInfo.id }}</span></div>
                 <div>Subtask: <span class="text-gray-300 font-medium">{{ selectedSubtask.id }}</span></div>
               </div>
@@ -265,22 +265,22 @@
     <!-- Task List -->
     <div v-else class="flex-1 overflow-y-auto p-2">
       <div class="space-y-3">
-        <!-- Phase collapsible sections -->
-        <div v-for="phase in phases" :key="phase.id" class="border border-[#333333] rounded">
-          <!-- Phase header -->
+        <!-- Feature collapsible sections -->
+        <div v-for="feature in features" :key="feature.id" class="border border-[#333333] rounded">
+          <!-- Feature header -->
           <div 
             class="flex items-center justify-between p-3 cursor-pointer hover:bg-[#1a1a1a] transition-colors"
-            @click="togglePhase(phase.id)"
+            @click="toggleFeature(feature.id)"
           >
             <div class="flex items-center">
-              <div class="w-2 h-2 rounded-full mr-2" :class="getPhaseStatusColor(phase.status)"></div>
-              <span class="font-medium text-gray-200">{{ phase.title }}</span>
+              <div class="w-2 h-2 rounded-full mr-2" :class="getFeatureStatusColor(feature.status)"></div>
+              <span class="font-medium text-gray-200">{{ feature.title }}</span>
             </div>
             <div class="flex items-center space-x-2">
-              <span class="text-xs px-2 py-1 rounded bg-[#333333] text-gray-300">{{ getTaskCount(phase.id) }} tasks</span>
+              <span class="text-xs px-2 py-1 rounded bg-[#333333] text-gray-300">{{ getTaskCount(feature.id) }} tasks</span>
               <svg 
                 class="w-4 h-4 text-gray-400 transition-transform" 
-                :class="{ 'rotate-180': expandedPhases[phase.id] }"
+                :class="{ 'rotate-180': expandedFeatures[feature.id] }"
                 fill="none" 
                 stroke="currentColor" 
                 viewBox="0 0 24 24" 
@@ -291,21 +291,21 @@
             </div>
           </div>
 
-          <!-- Phase content (collapsible) -->
-          <div v-if="expandedPhases[phase.id]" class="border-t border-[#333333] p-3">
-            <p class="text-sm text-gray-400 mb-3">{{ phase.description }}</p>
+          <!-- Feature content (collapsible) -->
+          <div v-if="expandedFeatures[feature.id]" class="border-t border-[#333333] p-3">
+            <p class="text-sm text-gray-400 mb-3">{{ feature.description }}</p>
             
-            <!-- Tasks in this phase -->
+            <!-- Tasks in this feature -->
             <div class="space-y-2">
               <div 
-                v-for="task in getTasksForPhase(phase.id)" 
+                v-for="task in getTasksForFeature(feature.id)" 
                 :key="task.id"
                 class="border border-[#444444] rounded p-3 hover:border-neon-blue transition-colors"
               >
                 <div class="flex items-center justify-between">
                   <div class="flex items-center">
                     <div class="w-2 h-2 rounded-full mr-2" :class="getTaskStatusColor(task.status)"></div>
-                    <span class="text-sm font-medium text-gray-200">{{ task.title }}</span>
+                    <span class="text-sm font-medium text-gray-200">[{{ task.id }}] {{ task.title }}</span>
                   </div>
                   <div class="text-xs text-gray-500">{{ task.id }}</div>
                 </div>
@@ -318,12 +318,12 @@
                     <div 
                       v-for="subtask in getSubtasksForTask(task.id)" 
                       :key="subtask.id"
-                      @click="openSubtaskModal(phase.id, task.id, subtask.id)"
+                      @click="openSubtaskModal(feature.id, task.id, subtask.id)"
                       class="flex items-center justify-between text-xs p-1 hover:bg-[#222222] rounded cursor-pointer"
                     >
                       <div class="flex items-center">
                         <div class="w-1.5 h-1.5 rounded-full mr-2" :class="getSubtaskStatusColor(subtask.status)"></div>
-                        <span class="text-gray-300">{{ subtask.title }}</span>
+        <span class="text-gray-300">[{{ subtask.id }}] {{ subtask.title }}</span>
                       </div>
                       <div class="text-gray-500 text-xs">{{ subtask.agent }}</div>
                     </div>
@@ -344,27 +344,27 @@
     <!-- Footer Stats -->
     <div class="border-t border-[#333333] p-2 text-xs text-gray-400">
       <div class="flex justify-between">
-        <div>Phases: {{ phases.length }}</div>
+        <div>Features: {{ features.length }}</div>
         <div>Tasks: {{ totalTasks }}</div>
         <div>Subtasks: {{ totalSubtasks }}</div>
-        <div>Active: {{ activePhasesCount }}</div>
+        <div>Active: {{ activeFeaturesCount }}</div>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, nextTick } from 'vue'
 
 // Reactive data
 const loading = ref(true)
 const error = ref(null)
-const projectData = ref({ phases: [], tasks: {}, subtasks: {} })
-const expandedPhases = ref({})
+const projectData = ref({ features: [], tasks: {}, subtasks: {} })
+const expandedFeatures = ref({})
 const showSubtaskModal = ref(false)
 const selectedSubtask = ref(null)
 const selectedTaskInfo = ref(null)
-const selectedPhaseInfo = ref(null)
+const selectedFeatureInfo = ref(null)
 
 // Fetch project data on mount
 onMounted(async () => {
@@ -376,10 +376,11 @@ onMounted(async () => {
     const data = await response.json()
     projectData.value = data
     
-    // Expand active phase by default
-    data.phases.forEach(phase => {
-      if (phase.status === 'active') {
-        expandedPhases.value[phase.id] = true
+    // Expand active feature by default
+    const featuresList = data.features || []
+    featuresList.forEach(feature => {
+      if (feature.status === 'in_progress') {
+        expandedFeatures.value[feature.id] = true
       }
     })
   } catch (err) {
@@ -390,33 +391,54 @@ onMounted(async () => {
   }
 })
 
+// Helper function to normalize subtask response from API
+const normalizeSubtask = (rawSubtask) => {
+  if (!rawSubtask) return rawSubtask;
+  const { details, activity_logs, ...rest } = rawSubtask;
+  const activityLog = (details && details.activity_log) || activity_logs || [];
+  // Merge rest and details, but activity_log from above
+  return { ...rest, ...details, activity_log: activityLog };
+};
+
 // Computed properties
-const phases = computed(() => projectData.value.phases || [])
+const features = computed(() => projectData.value.features || [])
 const tasks = computed(() => projectData.value.tasks || {})
 const subtasks = computed(() => projectData.value.subtasks || {})
 
 const totalTasks = computed(() => Object.keys(tasks.value).length)
 const totalSubtasks = computed(() => Object.keys(subtasks.value).length)
 
-const activePhasesCount = computed(() => {
-  return phases.value.filter(phase => phase.status === 'active').length
+const activeFeaturesCount = computed(() => {
+  return features.value.filter(feature => feature.status === 'active' || feature.status === 'in_progress').length
 })
 
 // Methods
-const togglePhase = (phaseId) => {
-  expandedPhases.value[phaseId] = !expandedPhases.value[phaseId]
+const toggleFeature = (featureId) => {
+  expandedFeatures.value[featureId] = !expandedFeatures.value[featureId]
 }
 
-const getTasksForPhase = (phaseId) => {
-  return Object.values(tasks.value).filter(task => task.phase_id === phaseId)
+const getTasksForFeature = (featureId) => {
+  return Object.values(tasks.value).filter(task => task.feature_id === featureId)
 }
 
 const getSubtasksForTask = (taskId) => {
-  return Object.values(subtasks.value).filter(subtask => subtask.task_id === taskId)
+  const subtaskList = Object.values(subtasks.value).filter(subtask => subtask.task_id === taskId)
+  // Sort by the subtask number (the third part of the ID)
+  subtaskList.sort((a, b) => {
+    const aParts = a.id.split('-')
+    const bParts = b.id.split('-')
+    // If the ID doesn't have three parts, fall back to string comparison
+    if (aParts.length < 3 || bParts.length < 3) {
+      return a.id.localeCompare(b.id)
+    }
+    // Compare the third part as a number
+    return parseInt(aParts[2]) - parseInt(bParts[2])
+  })
+  return subtaskList
 }
 
-const getTaskCount = (phaseId) => {
-  return getTasksForPhase(phaseId).length
+const getTaskCount = (featureId) => {
+  return getTasksForFeature(featureId).length
 }
 
 const getTaskAgent = (taskId) => {
@@ -429,33 +451,51 @@ const getTaskAgent = (taskId) => {
 }
 
 // Modal methods
-const openSubtaskModal = async (phaseId, taskId, subtaskId) => {
-  // Find the phase and task from local data
-  const phase = phases.value.find(p => p.id === phaseId)
+const openSubtaskModal = async (featureId, taskId, subtaskId) => {
+  // Find the feature and task from local data
+  const feature = features.value.find(f => f.id === featureId)
   const task = tasks.value[taskId]
   
-  if (phase && task) {
-    selectedPhaseInfo.value = phase
+  if (feature && task) {
+    selectedFeatureInfo.value = feature
     selectedTaskInfo.value = task
     showSubtaskModal.value = true
     
-    // Fetch full subtask details from backend
-    try {
-      const response = await fetch(`http://localhost:3000/api/subtask/${subtaskId}`)
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`)
-      }
-      const fullSubtask = await response.json()
-      selectedSubtask.value = fullSubtask
-      
-      // Initialize activity log filters
-      activityFilter.value = 'all'
-      activityTypeFilter.value = 'all'
-    } catch (err) {
-      console.error('Failed to fetch subtask details:', err)
-      // Fallback to lightweight data if available
-      selectedSubtask.value = subtasks.value[subtaskId] || {}
+    // Initialize selectedSubtask with a placeholder to avoid null error
+    selectedSubtask.value = {
+      id: subtaskId,
+      title: 'Loading...',
+      description: '',
+      status: 'pending',
+      agent: '',
+      estimated_time: '',
+      updated_at: '',
+      instructions: {},
+      notes: '',
+      key_considerations: [],
+      dependencies: [],
+      activity_log: []
     }
+    
+      // Fetch full subtask details from backend
+      try {
+        const response = await fetch(`http://localhost:3000/api/subtask/${subtaskId}`)
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`)
+        }
+        const fullSubtask = await response.json()
+        // Normalize the subtask data (handles details and activity_logs)
+        selectedSubtask.value = normalizeSubtask(fullSubtask)
+        
+        // Initialize activity log filters
+        activityFilter.value = 'all'
+        activityTypeFilter.value = 'all'
+      } catch (err) {
+        console.error('Failed to fetch subtask details:', err)
+        // Fallback to lightweight data if available, also normalize
+        const fallbackSubtask = subtasks.value[subtaskId] || {}
+        selectedSubtask.value = normalizeSubtask(fallbackSubtask)
+      }
   }
 }
 
@@ -463,7 +503,7 @@ const closeSubtaskModal = () => {
   showSubtaskModal.value = false
   selectedSubtask.value = null
   selectedTaskInfo.value = null
-  selectedPhaseInfo.value = null
+  selectedFeatureInfo.value = null
   newActivityMessage.value = ''
   newActivityType.value = 'general'
   activityFilter.value = 'all'
@@ -643,9 +683,10 @@ const addNewLine = () => {
 }
 
 // Status color helpers
-const getPhaseStatusColor = (status) => {
+const getFeatureStatusColor = (status) => {
   switch (status) {
-    case 'active': return 'bg-yellow-500'
+    case 'active': 
+    case 'in_progress': return 'bg-yellow-500'
     case 'completed': return 'bg-green-500'
     default: return 'bg-gray-500'
   }

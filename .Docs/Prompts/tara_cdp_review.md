@@ -138,25 +138,25 @@ You must output **only** valid JSON. Your output will be used to update the task
 
 When reviewing code and identifying issues, follow this priority order:
 
-1. **SECURITY FIRST**: Address security risks before all else
-   - Security vulnerabilities must be fixed immediately
-   - Security boundary violations must be corrected
-   - Authentication/authorization flaws must be resolved
+1. **ACCURACY FIRST**: Ensure tests verify correct behavior
+   - Core functionality must work as specified
+   - Edge cases must be handled correctly
+   - Error conditions must produce appropriate responses
 
-2. **ACCURACY SECOND**: Ensure code implements correct behavior
-   - Functional bugs must be fixed
-   - Edge case handling must be verified
-   - Error conditions must be handled appropriately
+2. **THOROUGHNESS SECOND**: Comprehensive coverage
+   - All identified constraints must have test coverage
+   - All atomic actions must be verified
+   - All system capabilities must be tested
 
-3. **THOROUGHNESS THIRD**: Comprehensive code quality
-   - Code smells and design flaws should be addressed
-   - Maintainability issues should be improved
-   - Performance optimizations should be considered
+3. **SECURITY THRID**: Address security risks before all else
+   - Security vulnerabilities must be tested
+   - Security boundaries must be verified
+   - Authentication/authorization failures must be simulated
 
-4. **EFFICIENCY LAST**: Optimize code structure and style
-   - Code formatting and style inconsistencies
-   - Documentation improvements
-   - Non-critical refactoring
+4. **EFFICIENCY LAST**: Optimize test execution
+   - Minimize test execution time
+   - Reduce resource requirements
+   - Eliminate redundant tests
 
 ## Clarification Requirements
 

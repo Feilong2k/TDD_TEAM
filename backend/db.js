@@ -24,9 +24,7 @@ console.log(`Database URL (cleaned): ${safeUrl}`);
 
 const pool = new Pool({
   connectionString: cleanedUrl,
-  ssl: {
-    rejectUnauthorized: false // Required for Neon and other cloud databases
-  },
+  ssl: false,
   max: 10, // Maximum number of clients in the pool
   idleTimeoutMillis: 30000,
   connectionTimeoutMillis: 2000,
@@ -87,16 +85,170 @@ async function getClient() {
   return client;
 }
 
-// Subtask CRUD operations
+// Features CRUD operations
+const features = {
+  async getAll() {
+    const result = await query(`
+      SELECT f.*, 
+             COALESCE(json_agg(t) FILTER (WHERE t.id IS NOT NULL), '[]') as tasks
+      FROM features f
+      LEFT JOIN tasks t ON f.id = t.feature_id
+      GROUP BY f.id
+      ORDER BY f.order_index, f.created_at
+    `);
+    return result.rows;
+  },
+
+  async getById(id) {
+    const result = await query(
+      `SELECT f.*, 
+              COALESCE(json_agg(t) FILTER (WHERE t.id IS NOT NULL), '[]') as tasks
+       FROM features f
+       LEFT JOIN tasks t ON f.id = t.feature_id
+       WHERE f.id = $1
+       GROUP BY f.id`,
+      [id]
+    );
+    return result.rows[0];
+  },
+
+  async create(featureData) {
+    const { id, title, description, status, order_index } = featureData;
+    const result = await query(
+      `INSERT INTO features (id, title, description, status, order_index)
+       VALUES ($1, $2, $3, $4, $5)
+       RETURNING *`,
+      [id, title, description, status || 'pending', order_index || 0]
+    );
+    return result.rows[0];
+  },
+
+  async update(id, updates) {
+    const fields = [];
+    const values = [];
+    let paramCount = 1;
+
+    Object.keys(updates).forEach(key => {
+      if (key !== 'id') {
+        fields.push(`${key} = $${paramCount}`);
+        values.push(updates[key]);
+        paramCount++;
+      }
+    });
+
+    if (fields.length === 0) {
+      throw new Error('No fields to update');
+    }
+
+    values.push(id);
+    const result = await query(
+      `UPDATE features SET ${fields.join(', ')}, updated_at = NOW()
+       WHERE id = $${paramCount}
+       RETURNING *`,
+      values
+    );
+    return result.rows[0];
+  },
+
+  async delete(id) {
+    await query('DELETE FROM features WHERE id = $1', [id]);
+    return true;
+  }
+};
+
+// Tasks CRUD operations
+const tasks = {
+  async getAll() {
+    const result = await query(`
+      SELECT t.*, 
+             COALESCE(json_agg(s) FILTER (WHERE s.id IS NOT NULL), '[]') as subtasks
+      FROM tasks t
+      LEFT JOIN subtasks s ON t.id = s.task_id
+      GROUP BY t.id
+      ORDER BY t.created_at
+    `);
+    return result.rows;
+  },
+
+  async getById(id) {
+    const result = await query(
+      `SELECT t.*, 
+              COALESCE(json_agg(s) FILTER (WHERE s.id IS NOT NULL), '[]') as subtasks
+       FROM tasks t
+       LEFT JOIN subtasks s ON t.id = s.task_id
+       WHERE t.id = $1
+       GROUP BY t.id`,
+      [id]
+    );
+    return result.rows[0];
+  },
+
+  async getByFeature(featureId) {
+    const result = await query(
+      `SELECT t.*, 
+              COALESCE(json_agg(s) FILTER (WHERE s.id IS NOT NULL), '[]') as subtasks
+       FROM tasks t
+       LEFT JOIN subtasks s ON t.id = s.task_id
+       WHERE t.feature_id = $1
+       GROUP BY t.id
+       ORDER BY t.created_at`,
+      [featureId]
+    );
+    return result.rows;
+  },
+
+  async create(taskData) {
+    const { id, feature_id, title, description, status, agent } = taskData;
+    const result = await query(
+      `INSERT INTO tasks (id, feature_id, title, description, status, agent)
+       VALUES ($1, $2, $3, $4, $5, $6)
+       RETURNING *`,
+      [id, feature_id, title, description, status || 'pending', agent]
+    );
+    return result.rows[0];
+  },
+
+  async update(id, updates) {
+    const fields = [];
+    const values = [];
+    let paramCount = 1;
+
+    Object.keys(updates).forEach(key => {
+      if (key !== 'id') {
+        fields.push(`${key} = $${paramCount}`);
+        values.push(updates[key]);
+        paramCount++;
+      }
+    });
+
+    if (fields.length === 0) {
+      throw new Error('No fields to update');
+    }
+
+    values.push(id);
+    const result = await query(
+      `UPDATE tasks SET ${fields.join(', ')}, updated_at = NOW()
+       WHERE id = $${paramCount}
+       RETURNING *`,
+      values
+    );
+    return result.rows[0];
+  },
+
+  async delete(id) {
+    await query('DELETE FROM tasks WHERE id = $1', [id]);
+    return true;
+  }
+};
+
+// Subtask CRUD operations (updated for new schema with task_id and feature_id)
 const subtasks = {
   async getAll() {
     const result = await query(`
       SELECT s.*, 
-             COALESCE(json_agg(ss.state) FILTER (WHERE ss.state IS NOT NULL), '[]') as state,
-             COALESCE(json_agg(sl) FILTER (WHERE sl.id IS NOT NULL), '[]') as logs
+             COALESCE(json_agg(sal) FILTER (WHERE sal.id IS NOT NULL), '[]') as activity_logs
       FROM subtasks s
-      LEFT JOIN subtask_state ss ON s.id = ss.subtask_id
-      LEFT JOIN subtask_logs sl ON s.id = sl.subtask_id
+      LEFT JOIN subtask_activity_logs sal ON s.id = sal.subtask_id
       GROUP BY s.id
       ORDER BY s.created_at DESC
     `);
@@ -106,25 +258,23 @@ const subtasks = {
   async getById(id) {
     const result = await query(
       `SELECT s.*, 
-              COALESCE(ss.state, '{}'::jsonb) as state,
-              COALESCE(json_agg(sl) FILTER (WHERE sl.id IS NOT NULL), '[]') as logs
+              COALESCE(json_agg(sal) FILTER (WHERE sal.id IS NOT NULL), '[]') as activity_logs
        FROM subtasks s
-       LEFT JOIN subtask_state ss ON s.id = ss.subtask_id
-       LEFT JOIN subtask_logs sl ON s.id = sl.subtask_id
+       LEFT JOIN subtask_activity_logs sal ON s.id = sal.subtask_id
        WHERE s.id = $1
-       GROUP BY s.id, ss.state`,
+       GROUP BY s.id`,
       [id]
     );
     return result.rows[0];
   },
 
   async create(subtaskData) {
-    const { id, title, phase, status, owner, priority, dependencies } = subtaskData;
+    const { id, task_id, feature_id, title, description, status, agent, dependencies, priority, estimated_time, risk_level, details, metadata } = subtaskData;
     const result = await query(
-      `INSERT INTO subtasks (id, title, phase, status, owner, priority, dependencies)
-       VALUES ($1, $2, $3, $4, $5, $6, $7)
+      `INSERT INTO subtasks (id, task_id, feature_id, title, description, status, agent, dependencies, priority, estimated_time, risk_level, details, metadata)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
        RETURNING *`,
-      [id, title, phase, status, owner, priority, dependencies || []]
+      [id, task_id, feature_id, title, description, status, agent, dependencies || [], priority, estimated_time, risk_level, details || {}, metadata || {}]
     );
     return result.rows[0];
   },
@@ -174,9 +324,9 @@ const subtasks = {
       
       // Add to activity log
       await client.query(
-        `INSERT INTO subtask_logs (subtask_id, actor, kind, content, meta)
+        `INSERT INTO subtask_activity_logs (subtask_id, type, agent, content, status)
          VALUES ($1, $2, $3, $4, $5)`,
-        [id, agent, 'status_update', `Status changed to ${status}`, { old_status: 'pending', new_status: status }]
+        [id, 'status_update', agent, `Status changed to ${status}`, 'open']
       );
       
       await client.query('COMMIT');
@@ -190,12 +340,12 @@ const subtasks = {
   },
 
   async addActivityLog(subtaskId, activityData) {
-    const { actor, kind, content, meta } = activityData;
+    const { type, agent, content, status, parent_id, attachments, metadata } = activityData;
     const result = await query(
-      `INSERT INTO subtask_logs (subtask_id, actor, kind, content, meta)
-       VALUES ($1, $2, $3, $4, $5)
+      `INSERT INTO subtask_activity_logs (subtask_id, type, agent, content, status, parent_id, attachments, metadata)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
        RETURNING *`,
-      [subtaskId, actor, kind, content, meta || {}]
+      [subtaskId, type, agent, content, status || 'open', parent_id, attachments || [], metadata || {}]
     );
     
     // Update subtask's updated_at
@@ -212,31 +362,23 @@ const subtasks = {
     const params = [subtaskId];
     let paramCount = 2;
 
-    if (filters.kind) {
-      whereClause += ` AND kind = $${paramCount}`;
-      params.push(filters.kind);
+    if (filters.type) {
+      whereClause += ` AND type = $${paramCount}`;
+      params.push(filters.type);
       paramCount++;
     }
 
     if (filters.status) {
-      whereClause += ` AND meta->>'status' = $${paramCount}`;
+      whereClause += ` AND status = $${paramCount}`;
       params.push(filters.status);
       paramCount++;
     }
 
     const result = await query(
-      `SELECT * FROM subtask_logs
+      `SELECT * FROM subtask_activity_logs
        ${whereClause}
-       ORDER BY created_at DESC`,
+       ORDER BY timestamp DESC`,
       params
-    );
-    return result.rows;
-  },
-
-  async getByPhase(phase) {
-    const result = await query(
-      `SELECT * FROM subtasks WHERE phase = $1 ORDER BY created_at`,
-      [phase]
     );
     return result.rows;
   },
@@ -253,6 +395,8 @@ const subtasks = {
 module.exports = {
   query,
   getClient,
+  features,
+  tasks,
   subtasks,
   pool
 };

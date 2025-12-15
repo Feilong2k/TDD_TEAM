@@ -31,6 +31,16 @@ This roadmap combines the Architecture Shift Plan (moving from JSON files to Pos
 
 ## 4. Workflow Overview (Updated)
 
+**Canonical Subtask Workflow**: Each subtask follows an 8-stage process documented in `.Docs/Workflow/subtask_workflow_stages.md`:
+1. Adam Decomposition & DB Upload
+2. Orion Pre-Start CDP Analysis  
+3. Tara Test Generation
+4. Devon Implementation
+5. Devon Refactoring
+6. Tara Final Review
+7. Rework (If Required)
+8. Orion Closeout
+
 ### Phase 0: Planning (Orion + Human)
 1. Human provides requirement via UI
 2. Orion decomposes into functions → tasks → subtasks (prefer ≤3 steps)
