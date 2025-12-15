@@ -1,0 +1,10 @@
+Create a simple Node.js script called "hello_agent.js" that does the following:
+
+1. Prints "Hello from AI Agent Alpha!" to the console
+2. Creates an array of programming languages: ["JavaScript", "Python", "TypeScript", "Go", "Rust"]
+3. Loops through the array and prints each language with its index
+4. Calculates and prints the total number of languages
+
+The script should be well-commented and follow best practices for Node.js code.
+
+After creating the file, verify that it works correctly by reading it back and checking its contents.

@@ -1,0 +1,188 @@
+{
+  "phases": [
+    {
+      "id": "phase1",
+      "title": "Foundation",
+      "description": "Phase 1: UI can chat with Orion, context checkbox works, basic task log creation, Orion performs Quick CDP",
+      "status": "active",
+      "task_ids": [
+        "1-1",
+        "1-2",
+        "1-3",
+        "1-4"
+      ]
+    }
+  ],
+  "tasks": {
+    "1-1": {
+      "id": "1-1",
+      "phase_id": "phase1",
+      "title": "UI can chat with Orion (real responses)",
+      "description": "Implement Orion wrapper functions 1-4 to enable real chat responses",
+      "status": "in_progress",
+      "subtask_ids": [
+        "1-1-1",
+        "1-1-2",
+        "1-1-3",
+        "1-1-4",
+        "1-1-5"
+      ]
+    },
+    "1-2": {
+      "id": "1-2",
+      "phase_id": "phase1",
+      "title": "Context checkbox works (send full context vs. minimal)",
+      "description": "Implement UI checkbox and backend logic for context selection",
+      "status": "pending",
+      "subtask_ids": [
+        "1-2-1",
+        "1-2-2",
+        "1-2-3"
+      ]
+    },
+    "1-3": {
+      "id": "1-3",
+      "phase_id": "phase1",
+      "title": "Basic task log creation",
+      "description": "Create project.json structure and logs directory for task tracking",
+      "status": "in_progress",
+      "subtask_ids": [
+        "1-3-1",
+        "1-3-2"
+      ]
+    },
+    "1-4": {
+      "id": "1-4",
+      "phase_id": "phase1",
+      "title": "Orion performs Quick CDP analysis",
+      "description": "Integrate Constraint Discovery Protocol for task analysis",
+      "status": "pending",
+      "subtask_ids": [
+        "1-4-1",
+        "1-4-2"
+      ]
+    }
+  },
+  "subtasks": {
+    "1-1-1": {
+      "id": "1-1-1",
+      "task_id": "1-1",
+      "title": "Function 1: Receives Messages",
+      "agent": "Devon",
+      "status": "completed",
+      "estimated_time": "2h",
+      "updated_at": "2025-12-12T22:00:00Z",
+      "updated_by": "Devon"
+    },
+    "1-1-2": {
+      "id": "1-1-2",
+      "task_id": "1-1",
+      "title": "Function 2: Aggregates Project Context",
+      "agent": "Devon",
+      "status": "completed",
+      "estimated_time": "4h",
+      "updated_at": "2025-12-13T19:30:00.000Z",
+      "updated_by": "System"
+    },
+    "1-1-3": {
+      "id": "1-1-3",
+      "task_id": "1-1",
+      "title": "Function 3: Calls Cline via Proxy",
+      "agent": "Devon",
+      "status": "pending",
+      "estimated_time": "4h",
+      "updated_at": null,
+      "updated_by": null
+    },
+    "1-1-4": {
+      "id": "1-1-4",
+      "task_id": "1-1",
+      "title": "Function 4: Validates Responses",
+      "agent": "Devon",
+      "status": "pending",
+      "estimated_time": "3h",
+      "updated_at": null,
+      "updated_by": null
+    },
+    "1-1-5": {
+      "id": "1-1-5",
+      "task_id": "1-1",
+      "title": "Implement Automatic Task Update API",
+      "agent": "Devon",
+      "status": "completed",
+      "estimated_time": "6h",
+      "updated_at": "2025-12-13T20:56:45.823Z",
+      "updated_by": "Devon"
+    },
+    "1-2-1": {
+      "id": "1-2-1",
+      "task_id": "1-2",
+      "title": "Create UI checkbox component",
+      "agent": "Devon",
+      "status": "pending",
+      "estimated_time": "2h",
+      "updated_at": null,
+      "updated_by": null
+    },
+    "1-2-2": {
+      "id": "1-2-2",
+      "task_id": "1-2",
+      "title": "Implement context logic in Orion wrapper",
+      "agent": "Devon",
+      "status": "pending",
+      "estimated_time": "3h",
+      "updated_at": null,
+      "updated_by": null
+    },
+    "1-2-3": {
+      "id": "1-2-3",
+      "task_id": "1-2",
+      "title": "Integrate checkbox with backend",
+      "agent": "Devon",
+      "status": "pending",
+      "estimated_time": "2h",
+      "updated_at": null,
+      "updated_by": null
+    },
+    "1-3-1": {
+      "id": "1-3-1",
+      "task_id": "1-3",
+      "title": "Create project.json structure",
+      "agent": "Adam",
+      "status": "in_progress",
+      "estimated_time": "1h",
+      "updated_at": "2025-12-13T01:40:00Z",
+      "updated_by": "Adam"
+    },
+    "1-3-2": {
+      "id": "1-3-2",
+      "task_id": "1-3",
+      "title": "Create logs directory and update mechanism",
+      "agent": "Adam",
+      "status": "pending",
+      "estimated_time": "2h",
+      "updated_at": null,
+      "updated_by": null
+    },
+    "1-4-1": {
+      "id": "1-4-1",
+      "task_id": "1-4",
+      "title": "Integrate CDP analysis into Orion",
+      "agent": "Orion",
+      "status": "pending",
+      "estimated_time": "3h",
+      "updated_at": null,
+      "updated_by": null
+    },
+    "1-4-2": {
+      "id": "1-4-2",
+      "task_id": "1-4",
+      "title": "Test Quick CDP on sample tasks",
+      "agent": "Tara",
+      "status": "pending",
+      "estimated_time": "2h",
+      "updated_at": null,
+      "updated_by": null
+    }
+  }
+}

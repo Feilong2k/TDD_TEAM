@@ -1,0 +1,183 @@
+{
+  "feature": "Feature 1: Local Database & Orion/Aider Setup",
+  "description": "Implementation of roadmap_v3.md Feature 1: Set up local PostgreSQL database, implement Orion as direct LLM agent, and create Aider adapter with JSON extraction.",
+  "created_at": "2025-12-14T23:30:00Z",
+  "features": [
+    {
+      "id": "F1.1",
+      "title": "Set Up Local PostgreSQL Database",
+      "phase": "Feature 1: Local Database & Orion/Aider Setup",
+      "status": "pending",
+      "owner": null,
+      "priority": "critical",
+      "dependencies": [],
+      "estimated_time": "1-2 days with AI assistance",
+      "subtasks": [
+        {
+          "id": "F1.1.1",
+          "title": "Install and configure local PostgreSQL",
+          "description": "Install PostgreSQL using Docker or native installation, configure authentication, create database user, set up network settings for local access.",
+          "status": "pending",
+          "owner": null,
+          "priority": "critical",
+          "estimated_time_hours": 4,
+          "dependencies": []
+        },
+        {
+          "id": "F1.1.2",
+          "title": "Create database schema",
+          "description": "Execute backend/db/schema.sql to create tables (subtasks, subtask_state, subtask_logs), add indexes, set up foreign key relationships.",
+          "status": "pending",
+          "owner": null,
+          "priority": "high",
+          "estimated_time_hours": 2,
+          "dependencies": ["F1.1.1"]
+        },
+        {
+          "id": "F1.1.3",
+          "title": "Migrate data from Neon or initialize fresh",
+          "description": "Export data from Neon database, transform JSON structure to match schema, import to local PostgreSQL, verify data integrity.",
+          "status": "pending",
+          "owner": null,
+          "priority": "medium",
+          "estimated_time_hours": 3,
+          "dependencies": ["F1.1.2"]
+        },
+        {
+          "id": "F1.1.4",
+          "title": "Update backend configuration",
+          "description": "Update .env file with local connection string, modify backend/db.js to use local database, test connection, implement error handling.",
+          "status": "pending",
+          "owner": null,
+          "priority": "high",
+          "estimated_time_hours": 2,
+          "dependencies": ["F1.1.3"]
+        }
+      ]
+    },
+    {
+      "id": "F1.2",
+      "title": "Implement Orion as Direct LLM Agent",
+      "phase": "Feature 1: Local Database & Orion/Aider Setup",
+      "status": "pending",
+      "owner": null,
+      "priority": "high",
+      "dependencies": ["F1.1"],
+      "estimated_time": "1-2 days with AI assistance",
+      "subtasks": [
+        {
+          "id": "F1.2.1",
+          "title": "Create Orion database tools",
+          "description": "Build database read/write functions for Orion context, implement subtask creation and status update tools, create context aggregation from database and files.",
+          "status": "pending",
+          "owner": null,
+          "priority": "high",
+          "estimated_time_hours": 5,
+          "dependencies": ["F1.1.4"]
+        },
+        {
+          "id": "F1.2.2",
+          "title": "Integrate DeepSeek API with prompt templates",
+          "description": "Set up DeepSeek API integration, create prompt templates for planning and CDP, implement conversation management with database logging.",
+          "status": "pending",
+          "owner": null,
+          "priority": "high",
+          "estimated_time_hours": 4,
+          "dependencies": ["F1.2.1"]
+        },
+        {
+          "id": "F1.2.3",
+          "title": "Build Orion wrapper with database tool calling",
+          "description": "Create tool schema for database operations, implement tool calling in Orion wrapper, add error handling for failed tool executions.",
+          "status": "pending",
+          "owner": null,
+          "priority": "medium",
+          "estimated_time_hours": 4,
+          "dependencies": ["F1.2.2"]
+        },
+        {
+          "id": "F1.2.4",
+          "title": "Test end-to-end planning workflow",
+          "description": "Test Orion planning with database interaction, verify CDP analysis identifies constraints accurately, ensure planning completes within 2 minutes.",
+          "status": "pending",
+          "owner": null,
+          "priority": "medium",
+          "estimated_time_hours": 3,
+          "dependencies": ["F1.2.3"]
+        }
+      ]
+    },
+    {
+      "id": "F1.3",
+      "title": "Create Aider Adapter with JSON Extraction",
+      "phase": "Feature 1: Local Database & Orion/Aider Setup",
+      "status": "pending",
+      "owner": null,
+      "priority": "high",
+      "dependencies": [],
+      "estimated_time": "1-2 days with AI assistance",
+      "subtasks": [
+        {
+          "id": "F1.3.1",
+          "title": "Build Aider CLI wrapper with timeout handling",
+          "description": "Create module to execute Aider commands programmatically, implement context passing, add timeout and error handling for long-running commands.",
+          "status": "pending",
+          "owner": null,
+          "priority": "high",
+          "estimated_time_hours": 4,
+          "dependencies": []
+        },
+        {
+          "id": "F1.3.2",
+          "title": "Implement JSON extraction layer with validation",
+          "description": "Create natural language JSON parsing utilities, add validation against expected schemas, implement retry logic for failed JSON parsing.",
+          "status": "pending",
+          "owner": null,
+          "priority": "high",
+          "estimated_time_hours": 5,
+          "dependencies": ["F1.3.1"]
+        },
+        {
+          "id": "F1.3.3",
+          "title": "Integrate with database status change hooks",
+          "description": "Create webhook system for database status changes, map status values to Aider execution modes (Tara/Devon), implement result logging back to database.",
+          "status": "pending",
+          "owner": null,
+          "priority": "medium",
+          "estimated_time_hours": 5,
+          "dependencies": ["F1.3.2", "F1.2.1"]
+        },
+        {
+          "id": "F1.3.4",
+          "title": "Test Tara → Devon → Tara execution cycle",
+          "description": "Test complete Aider execution cycle, verify JSON extraction success rate >90%, ensure results logged to database automatically.",
+          "status": "pending",
+          "owner": null,
+          "priority": "medium",
+          "estimated_time_hours": 4,
+          "dependencies": ["F1.3.3"]
+        }
+      ]
+    }
+  ],
+  "accelerated_timeline": {
+    "with_ai_assistance": "5-7 days for all features",
+    "parallel_execution": [
+      "Database setup: 1 day",
+      "Orion implementation: 1-2 days",
+      "Aider adapter: 1-2 days",
+      "Integration & testing: 1-2 days"
+    ]
+  },
+  "success_criteria": [
+    "Local PostgreSQL running with <100ms query times",
+    "All subtask data accessible via REST API",
+    "Database connection errors handled gracefully",
+    "Migration from Neon completed without data loss",
+    "Orion can create subtasks in database via LLM calls",
+    "Aider adapter successfully executes code tasks",
+    "JSON extraction success rate >90%",
+    "Status changes trigger appropriate agent execution",
+    "Complete TDD cycle automated end-to-end"
+  ]
+}

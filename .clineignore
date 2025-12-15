@@ -13,12 +13,7 @@ node_modules/
 # Testing
 /coverage/
 
-# Environment variables
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+
 
 # Large data files
 *.csv
@@ -42,9 +37,7 @@ Thumbs.db
 *.swp
 *.swo
 
-# Logs
-logs/
-*.log
+
 
 # Temporary files
 tmp/
@@ -57,6 +50,3 @@ frontend/.vite/
 # Backend build artifacts
 backend/node_modules/
 
-# Data logs
-data/log/
-data/logs/

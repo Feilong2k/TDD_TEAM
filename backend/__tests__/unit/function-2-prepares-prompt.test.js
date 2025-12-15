@@ -56,7 +56,7 @@ describe('Function 2: Prepares the Prompt', () => {
       const prompt = wrapper.formatPrompt(userMessage, conversationHistory);
       
       // Should include system prompt
-      expect(prompt).toContain('You are Orion, an expert in Test-Driven Development (TDD) and software engineering.');
+      expect(prompt).toContain('Orchestrator for TDD workflow with Adam (decomposition), Tara (tester), and Devon (developer).');
       
       // Should include user message
       expect(prompt).toContain(userMessage);
